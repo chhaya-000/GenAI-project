@@ -1,182 +1,131 @@
 """
 =========================================================
-Synthetic Data Assurance
-Upload Data
+Synthetic Data Validation
+1. Upload Dataset
 =========================================================
 """
 
+from pathlib import Path
+
 import streamlit as st
-import pandas as pd
 
 from src.utils import (
     load_dataset,
     dataset_summary,
-    column_summary,
-    missing_value_summary,
+    preview_dataset,
 )
 
 st.set_page_config(
-    page_title="Upload Data",
-    page_icon="📂",
+    page_title="Upload Dataset",
+    page_icon="📁",
     layout="wide",
 )
 
-st.title("📂 Upload Dataset")
+st.title("📁 Upload Dataset")
 
-st.write(
-    "Upload any CSV or Excel dataset to begin the synthetic data generation process."
+st.markdown(
+"""
+Upload any **CSV** or **Excel** dataset to begin the
+Synthetic Data Validation workflow.
+"""
 )
-
-# =====================================================
-# Upload File
-# =====================================================
 
 uploaded_file = st.file_uploader(
     "Choose a dataset",
     type=["csv", "xlsx", "xls"],
 )
 
-if uploaded_file is None:
-    st.info("Please upload a dataset.")
-    st.stop()
+if uploaded_file is not None:
 
-# =====================================================
-# Load Dataset
-# =====================================================
+    try:
 
-try:
+        df = load_dataset(uploaded_file)
 
-    dataframe = load_dataset(uploaded_file)
+        # Store in session
+        st.session_state.raw_data = df
 
-except Exception as e:
+        st.success("Dataset uploaded successfully.")
 
-    st.error(f"Unable to read dataset.\n\n{e}")
+        st.divider()
 
-    st.stop()
+        # =====================================================
+        # Dataset Summary
+        # =====================================================
 
-# =====================================================
-# Save Session
-# =====================================================
+        st.subheader("Dataset Summary")
 
-st.session_state.raw_data = dataframe
+        summary = dataset_summary(df)
 
-# =====================================================
-# Dataset Preview
-# =====================================================
+        col1, col2, col3 = st.columns(3)
 
-st.markdown("---")
+        col1.metric("Rows", summary["Rows"])
+        col2.metric("Columns", summary["Columns"])
+        col3.metric("Memory (MB)", summary["Memory Usage (MB)"])
 
-st.header("Dataset Preview")
+        col4, col5 = st.columns(2)
 
-st.dataframe(
-    dataframe.head(),
-    use_container_width=True,
-)
+        col4.metric(
+            "Missing Values",
+            summary["Missing Values"],
+        )
 
-# =====================================================
-# Dataset Summary
-# =====================================================
+        col5.metric(
+            "Duplicate Rows",
+            summary["Duplicate Rows"],
+        )
 
-st.markdown("---")
+        st.divider()
 
-st.header("Dataset Summary")
+        # =====================================================
+        # Dataset Preview
+        # =====================================================
 
-summary = dataset_summary(dataframe)
+        st.subheader("Preview")
 
-c1, c2, c3, c4, c5 = st.columns(5)
+        st.dataframe(
+            preview_dataset(df, 10),
+            use_container_width=True,
+        )
 
-c1.metric("Rows", summary["Rows"])
+        st.divider()
 
-c2.metric("Columns", summary["Columns"])
+        # =====================================================
+        # Column Information
+        # =====================================================
 
-c3.metric(
-    "Missing Values",
-    summary["Missing Values"],
-)
+        st.subheader("Columns")
 
-c4.metric(
-    "Duplicate Rows",
-    summary["Duplicate Rows"],
-)
+        info = []
 
-c5.metric(
-    "Memory (MB)",
-     summary.get("Memory Usage (MB)", 0),
-)
+        for col in df.columns:
 
-# =====================================================
-# Column Information
-# =====================================================
+            info.append({
 
-st.markdown("---")
+                "Column": col,
 
-st.header("Column Information")
+                "Type": str(df[col].dtype),
 
-st.dataframe(
+                "Missing": int(df[col].isna().sum()),
 
-    column_summary(dataframe),
+                "Unique": int(df[col].nunique()),
 
-    use_container_width=True,
+            })
 
-)
+        st.dataframe(
+            info,
+            use_container_width=True,
+        )
 
-# =====================================================
-# Missing Values
-# =====================================================
+        st.success(
+            "Proceed to **2️⃣ Preprocessing** from the sidebar."
+        )
 
-st.markdown("---")
+    except Exception as e:
 
-st.header("Missing Value Summary")
-
-missing = missing_value_summary(dataframe)
-
-if missing["Missing Values"].sum() == 0:
-
-    st.success("No missing values detected.")
+        st.error(str(e))
 
 else:
 
-    st.dataframe(
-        missing,
-        use_container_width=True,
-    )
+    st.info("Please upload a CSV or Excel dataset.")
 
-# =====================================================
-# Dataset Types
-# =====================================================
-
-st.markdown("---")
-
-st.header("Column Types")
-
-numeric = dataframe.select_dtypes(
-    include="number"
-).columns.tolist()
-
-categorical = dataframe.select_dtypes(
-    exclude="number"
-).columns.tolist()
-
-c1, c2 = st.columns(2)
-
-with c1:
-
-    st.subheader("Numeric")
-
-    st.write(numeric)
-
-with c2:
-
-    st.subheader("Categorical")
-
-    st.write(categorical)
-
-# =====================================================
-# Success
-# =====================================================
-
-st.markdown("---")
-
-st.success(
-    "Dataset uploaded successfully. Continue to the **Preprocessing** page."
-)
+    

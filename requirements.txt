@@ -1,22 +1,24 @@
-streamlit>=1.35.0
+streamlit==1.37.1
 
-pandas>=2.2.2
-numpy>=1.26.4
+pandas==2.2.2
+numpy==1.26.4
 
-scipy>=1.13.1
+scipy==1.13.1
 
-scikit-learn>=1.5.0
+scikit-learn==1.5.1
 
-matplotlib>=3.9.0
+matplotlib==3.9.1
 
-plotly>=5.22.0
+plotly==5.23.0
 
-sdv>=1.15.0
+sdv==1.15.0
 
-joblib>=1.4.2
+pyarrow==17.0.0
 
-reportlab>=4.2.0
+joblib==1.4.2
 
-openpyxl>=3.1.5
+reportlab==4.2.2
 
-xlrd>=2.0.1
+openpyxl==3.1.5
+
+xlrd==2.0.1
