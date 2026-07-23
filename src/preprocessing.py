@@ -53,9 +53,9 @@ class DataPreprocessor:
         # Convert categorical columns to string
         # ---------------------------------------------
 
-        for col in data.select_dtypes(include=["object"]).columns:
-
-            data[col] = data[col].astype(str)
+        for col in data.columns:
+            if not pd.api.types.is_numeric_dtype(data[col]):
+                data[col] = data[col].fillna("Missing").astype(object)
 
         # ---------------------------------------------
         # Convert boolean
@@ -76,6 +76,9 @@ class DataPreprocessor:
         metadata.detect_from_dataframe(data=data)
 
         self.metadata = metadata
+        print(data.dtypes.to_string())
+        print(type(data.iloc[0, 0]))
+        print(data.iloc[:, 0].map(type).value_counts())
 
         return data, metadata
 

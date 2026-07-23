@@ -46,8 +46,13 @@ c3.metric(
     int(raw_df.isna().sum().sum())
 )
 
+display_raw = raw_df.head().copy()
+
+for col in display_raw.columns:
+    display_raw[col] = display_raw[col].astype(str)
+
 st.dataframe(
-    raw_df.head(),
+    display_raw,
     use_container_width=True,
 )
 
@@ -103,8 +108,13 @@ c3.metric(
     int(processed.isna().sum().sum())
 )
 
+display_processed = processed.head().copy()
+
+for col in display_processed.columns:
+    display_processed[col] = display_processed[col].astype(str)
+
 st.dataframe(
-    processed.head(),
+    display_processed,
     use_container_width=True,
 )
 
