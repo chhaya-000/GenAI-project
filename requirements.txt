@@ -1,8 +1,9 @@
 streamlit==1.37.1
 
 pandas==2.2.3
-numpy>=2.1,<2.4
-scipy
+numpy==2.2.6
+scipy==1.15.3
+
 scikit-learn==1.5.1
 
 matplotlib==3.9.1
@@ -13,5 +14,6 @@ pyarrow==17.0.0
 
 joblib==1.4.2
 reportlab==4.2.2
+
 openpyxl==3.1.5
 xlrd==2.0.1

@@ -27,7 +27,7 @@ from scipy.stats import ks_2samp
 from scipy.stats import wasserstein_distance
 from scipy.spatial.distance import jensenshannon
 
-from sklearn.model_selection import train_test_split
+
 
 from sklearn.metrics import (
     accuracy_score,
